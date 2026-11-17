@@ -20,7 +20,9 @@ describe('CheckoutPage', () => {
     expect(screen.getByLabelText(/street, number/i)).toBeInTheDocument();
     expect(screen.getByText(/shipping/i)).toBeInTheDocument();
     expect(screen.getByText(/place order/i)).toBeInTheDocument();
-    expect(screen.getByText(/credit card/i)).toBeInTheDocument();
+    expect(screen.getByText('Pix')).toBeInTheDocument();
+    expect(screen.getByText('Cartão de crédito')).toBeInTheDocument();
+    expect(screen.getByText('Dinheiro na entrega')).toBeInTheDocument();
   });
 
   it('shows a price-change notice with the old/new prices, and resubmits with confirm_price_changes when accepted', async () => {

@@ -8,8 +8,9 @@ import './Nav.css';
 import './CartPage.css';
 import './CheckoutPage.css';
 
-const SHIPPING_COST = 12;
-const TAX_RATE = 0.08;
+const SHIPPING_COST = 8;
+const FREE_SHIPPING_THRESHOLD = 80;
+const TAX_RATE = 0;
 
 function FormField({ id, label, ...inputProps }) {
     return (
@@ -48,7 +49,9 @@ function PaymentMethodSelector({ selectedId, onSelect }) {
                             required
                         />
                         <div className="payment-option-content">
-                            <img src={method.image} alt={method.label} className="payment-option-image" />
+                            {method.image && (
+                                <img src={method.image} alt="" className="payment-option-image" />
+                            )}
                             <span>{method.label}</span>
                         </div>
                     </label>
@@ -213,7 +216,8 @@ function CheckoutPage({ items, cartItemsCount, onBackToCart, onPlaceOrder, user,
         [items]
     );
     const tax = Math.round(subtotal * TAX_RATE);
-    const total = subtotal + tax + SHIPPING_COST;
+    const shipping = subtotal > FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
+    const total = subtotal + tax + shipping;
 
     const handlePlaceOrder = async (confirmPriceChanges = false) => {
         const requiredClientFields = [
@@ -357,7 +361,7 @@ function CheckoutPage({ items, cartItemsCount, onBackToCart, onPlaceOrder, user,
                         items={items}
                         subtotal={subtotal}
                         tax={tax}
-                        shipping={SHIPPING_COST}
+                        shipping={shipping}
                         total={total}
                         onPlaceOrder={() => handlePlaceOrder(false)}
                         isSubmitting={isSubmitting}

@@ -91,6 +91,14 @@ class CheckoutInfo(BaseModel):
     address_city_state: Optional[str] = None
     address_zip: Optional[str] = None
     payment_method: str
+
+    @field_validator("payment_method")
+    @classmethod
+    def validate_payment_method(cls, payment_method):
+        if payment_method not in models.PAYMENT_METHODS:
+            raise ValueError("Invalid payment method")
+        return payment_method
+
     # Required for guest checkout (no auth token): identifies which guest
     # cart, tracked by session_id, to check out. Ignored for signed-in users.
     session_id: Optional[str] = None
@@ -107,6 +115,13 @@ class AccountUpdate(BaseModel):
     default_address_city_state: Optional[str] = None
     default_address_zip: Optional[str] = None
     default_payment_method: Optional[str] = None
+
+    @field_validator("default_payment_method")
+    @classmethod
+    def validate_default_payment_method(cls, payment_method):
+        if payment_method is not None and payment_method not in models.PAYMENT_METHODS:
+            raise ValueError("Invalid payment method")
+        return payment_method
 
 
 class OrderStatusUpdate(BaseModel):
@@ -235,8 +250,9 @@ def _merge_guest_cart_into_user_cart(db: Session, guest_cart: models.Cart, user_
 # ---------------------------------------------------------------------------
 
 # Mantidos em sincronia com as mesmas constantes no front-end (CheckoutPage.js).
-SHIPPING_COST = 12.0
-TAX_RATE = 0.08
+SHIPPING_COST = 8.0
+FREE_SHIPPING_THRESHOLD = 80.0
+TAX_RATE = 0.0
 
 
 def _serialize_order(order: models.Order):
@@ -475,7 +491,8 @@ def place_order(
     # what the client sends in the payload, preventing the total from being manipulated.
     subtotal = sum(item.product.price * item.quantity for item in cart.items)
     tax = round(subtotal * TAX_RATE, 2)
-    total = subtotal + tax + SHIPPING_COST
+    shipping = 0.0 if subtotal > FREE_SHIPPING_THRESHOLD else SHIPPING_COST
+    total = subtotal + tax + shipping
 
     order = models.Order(
         user_id=current_user.id if current_user else None,
@@ -490,7 +507,7 @@ def place_order(
         payment_method=payload.payment_method,
         subtotal=subtotal,
         tax=tax,
-        shipping=SHIPPING_COST,
+        shipping=shipping,
         total=total,
     )
     db.add(order)

@@ -10,7 +10,7 @@ function mockFetchOnce(body, ok = true) {
 const CHECKOUT_INFO = {
   name: 'Test User',
   email: 'user@example.com',
-  payment_method: 'paypal',
+  payment_method: 'pix',
 };
 
 afterEach(() => {

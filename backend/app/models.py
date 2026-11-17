@@ -4,6 +4,7 @@ from sqlalchemy.orm import relationship
 from .database import Base
 
 ORDER_STATUSES = ("received", "preparing", "out_for_delivery", "delivered")
+PAYMENT_METHODS = ("pix", "credit_card", "cash_on_delivery")
 
 class Category(Base):
     __tablename__ = "categories"

@@ -22,7 +22,7 @@ CHECKOUT_PAYLOAD = {
     "address_street": "Rua das Flores, 123",
     "address_city_state": "Santos, SP",
     "address_zip": "11000-000",
-    "payment_method": "paypal",
+    "payment_method": "pix",
 }
 
 
@@ -52,9 +52,73 @@ def test_place_order_computes_totals_from_server_side_cart(client, seeded_produc
     assert order["items"][0]["quantity"] == 2
     assert order["status"] == "received"
     assert order["subtotal"] == 20.0  # 10 * 2, calculated on the server
-    assert order["tax"] == round(20.0 * 0.08, 2)
-    assert order["shipping"] == 12.0
+    assert order["tax"] == 0.0
+    assert order["shipping"] == 8.0
     assert order["total"] == order["subtotal"] + order["tax"] + order["shipping"]
+
+
+def test_place_order_charges_shipping_at_exactly_eighty_reais(client, seeded_product):
+    user = register_user(client)
+    headers = auth_headers(user["access_token"])
+    client.post("/cart/me/add", json={"product_id": "chocolate", "quantity": 8}, headers=headers)
+
+    response = client.post("/orders", json=CHECKOUT_PAYLOAD, headers=headers)
+
+    assert response.status_code == 200
+    order = response.json()
+    assert order["subtotal"] == 80.0
+    assert order["tax"] == 0.0
+    assert order["shipping"] == 8.0
+    assert order["total"] == 88.0
+
+
+def test_place_order_uses_free_shipping_above_eighty_reais(client, seeded_product):
+    user = register_user(client)
+    headers = auth_headers(user["access_token"])
+    client.post("/cart/me/add", json={"product_id": "chocolate", "quantity": 9}, headers=headers)
+
+    response = client.post("/orders", json=CHECKOUT_PAYLOAD, headers=headers)
+
+    assert response.status_code == 200
+    order = response.json()
+    assert order["subtotal"] == 90.0
+    assert order["tax"] == 0.0
+    assert order["shipping"] == 0.0
+    assert order["total"] == 90.0
+
+
+@pytest.mark.parametrize("payment_method", ["pix", "credit_card", "cash_on_delivery"])
+def test_place_order_accepts_supported_payment_methods(client, seeded_product, payment_method):
+    user = register_user(client)
+    headers = auth_headers(user["access_token"])
+    client.post("/cart/me/add", json={"product_id": "chocolate", "quantity": 1}, headers=headers)
+
+    response = client.post(
+        "/orders",
+        json=dict(CHECKOUT_PAYLOAD, payment_method=payment_method),
+        headers=headers,
+    )
+
+    assert response.status_code == 200
+    assert response.json()["payment_method"] == payment_method
+
+
+def test_place_order_rejects_unsupported_payment_method(client):
+    response = client.post("/orders", json=dict(CHECKOUT_PAYLOAD, payment_method="paypal"))
+
+    assert response.status_code == 422
+
+
+def test_update_account_rejects_unsupported_default_payment_method(client):
+    user = register_user(client)
+
+    response = client.put(
+        "/account",
+        json={"default_payment_method": "apple-pay"},
+        headers=auth_headers(user["access_token"]),
+    )
+
+    assert response.status_code == 422
 
 
 def test_place_order_ignores_client_submitted_prices(client, seeded_product):
@@ -96,7 +160,7 @@ def test_place_order_saves_data_as_account_defaults(client, seeded_product):
     account = client.get("/account", headers=headers).json()
     assert account["default_address_street"] == "Rua das Flores, 123"
     assert account["default_address_city_state"] == "Santos, SP"
-    assert account["default_payment_method"] == "paypal"
+    assert account["default_payment_method"] == "pix"
     assert account["default_phone"] == "+55 13 99999-0000"
 
 
