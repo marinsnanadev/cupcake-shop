@@ -1,7 +1,7 @@
 import './App.css';
 import './Home.css';
 import React, { useState } from 'react';
-import splashImage from './assets/images/splash.jpg';
+import splashImage from './assets/cupcakes/classicos-banner.jpg';
 import SplashPage from './SplashPage';
 import CartPage from './CartPage';
 import CheckoutPage from './CheckoutPage';
@@ -16,6 +16,7 @@ import ToastNotifications from './ToastNotifications';
 import { useCart } from './useCart';
 import { useAuth } from './useAuth';
 import { placeOrder } from './accountApi';
+import { STORE_NAME } from './storeConfig';
 
 function App() {
   const [showStorefront, setShowStorefront] = useState(false);
@@ -155,10 +156,10 @@ function App() {
       />
       {showLogoutConfirm && (
         <ConfirmModal
-          title="Log out of your account?"
-          message="You can log back in anytime to pick up where you left off."
-          confirmLabel="Log out"
-          cancelLabel="Stay logged in"
+          title={`Sair da ${STORE_NAME}?`}
+          message="Você poderá entrar novamente quando quiser."
+          confirmLabel="Sair"
+          cancelLabel="Continuar conectado"
           onCancel={() => setShowLogoutConfirm(false)}
           onConfirm={() => {
             auth.logout();

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import './ConfirmModal.css';
 
-function ConfirmModal({ title, message, confirmLabel = 'Confirm', cancelLabel = 'Cancel', onConfirm, onCancel }) {
+function ConfirmModal({ title, message, confirmLabel = 'Confirmar', cancelLabel = 'Cancelar', onConfirm, onCancel }) {
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === 'Escape') onCancel();

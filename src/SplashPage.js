@@ -1,16 +1,17 @@
 import React from 'react';
 import './SplashPage.css';
+import { STORE_NAME } from './storeConfig';
 
 function SplashPage({ image, onEnter }) {
   return (
     <div className="splash-page">
-      <img className="splash-image" src={image} alt="Violet fashion campaign" />
+      <img className="splash-image" src={image} alt="Cupcakes gourmet da loja" />
       <div className="splash-overlay" />
       <div className="splash-content">
-        <p className="splash-tag">fashion house</p>
-        <h1 className="splash-title">VIOLET</h1>
+        <p className="splash-tag">Cupcakes feitos com carinho</p>
+        <h1 className="splash-title">{STORE_NAME}</h1>
         <button type="button" className="splash-button" onClick={onEnter}>
-          Enter the page
+          Conheça a loja
         </button>
       </div>
     </div>

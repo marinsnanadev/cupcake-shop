@@ -59,7 +59,7 @@ function AuthForm({ onLogin, onRegister, submitLabel }) {
           </div>
         )}
         <div className="form-field">
-          <label htmlFor="auth-email">Email</label>
+          <label htmlFor="auth-email">E-mail</label>
           <input
             id="auth-email"
             type="email"

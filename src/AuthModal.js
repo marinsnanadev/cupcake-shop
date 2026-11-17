@@ -14,7 +14,7 @@ function AuthModal({ onClose, onLogin, onRegister }) {
   return (
     <div className="auth-modal-overlay" onClick={onClose}>
       <div className="auth-modal-card" onClick={(event) => event.stopPropagation()}>
-        <button type="button" className="auth-modal-close" aria-label="Close" onClick={onClose}>
+        <button type="button" className="auth-modal-close" aria-label="Fechar" onClick={onClose}>
           ×
         </button>
         <AuthForm onLogin={onLogin} onRegister={onRegister} />

@@ -7,7 +7,7 @@ function ToastNotifications({ toasts }) {
       <div className="toast-content">
         <span className="toast-icon">✓</span>
         <div className="toast-text">
-          <p className="toast-title">{toast.product.name} added to bag</p>
+          <p className="toast-title">{toast.product.name} adicionado à sacola</p>
           <p className="toast-price">{formatPrice(toast.product.price)}</p>
         </div>
       </div>

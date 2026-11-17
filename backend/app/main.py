@@ -151,7 +151,7 @@ def get_products(db: Session = Depends(get_db)):
 def get_products_by_category(category_name: str, db: Session = Depends(get_db)):
     category = db.query(models.Category).filter(models.Category.name == category_name).first()
     if not category:
-        raise HTTPException(status_code=404, detail="Category not found")
+        raise HTTPException(status_code=404, detail="Categoria não encontrada")
     return category.products
 
 
@@ -204,7 +204,7 @@ def _serialize_cart(cart: models.Cart):
 def _add_item_to_cart(db: Session, cart: models.Cart, product_id: str, quantity: int):
     product = db.query(models.Product).filter(models.Product.id == product_id).first()
     if not product:
-        raise HTTPException(status_code=404, detail="Product not found")
+        raise HTTPException(status_code=404, detail="Produto não encontrado")
 
     existing_item = db.query(models.CartItem).filter(
         models.CartItem.cart_id == cart.id,
@@ -289,7 +289,7 @@ def _serialize_order(order: models.Order):
 def register(payload: UserRegister, db: Session = Depends(get_db)):
     existing_user = db.query(models.User).filter(models.User.email == payload.email).first()
     if existing_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
+        raise HTTPException(status_code=400, detail="Este e-mail já está cadastrado")
 
     user = models.User(
         name=payload.name,
@@ -308,7 +308,7 @@ def register(payload: UserRegister, db: Session = Depends(get_db)):
 def login(payload: UserLogin, db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.email == payload.email).first()
     if not user or not verify_password(payload.password, user.hashed_password):
-        raise HTTPException(status_code=401, detail="Invalid email or password")
+        raise HTTPException(status_code=401, detail="E-mail ou senha inválidos")
 
     if payload.session_id:
         guest_cart = db.query(models.Cart).filter(models.Cart.session_id == payload.session_id).first()
@@ -367,7 +367,7 @@ def update_my_cart_item(
         .first()
     )
     if not item:
-        raise HTTPException(status_code=404, detail="Item not found")
+        raise HTTPException(status_code=404, detail="Item não encontrado")
     item.quantity = update.quantity
     db.commit()
     return {"message": "Quantity updated"}
@@ -419,7 +419,7 @@ def place_order(
         # Guest checkout: no auth token, so the cart is identified by the
         # session_id the front-end has been using for this guest all along.
         if not payload.session_id:
-            raise HTTPException(status_code=400, detail="session_id is required for guest checkout")
+            raise HTTPException(status_code=400, detail="Identificador da sessão é obrigatório para finalizar como visitante")
         owner_desc = f"session_id={payload.session_id}"
         cart = get_or_create_cart(db, payload.session_id)
 
@@ -446,7 +446,7 @@ def place_order(
             return _serialize_order(existing_order)
 
     if not cart.items:
-        raise HTTPException(status_code=400, detail="Cart is empty")
+        raise HTTPException(status_code=400, detail="Sua sacola está vazia")
 
     # A product may have been deleted from the catalog after being added to
     # the cart. Fail with a clear, actionable error instead of crashing on
@@ -458,7 +458,7 @@ def place_order(
             status_code=409,
             detail={
                 "code": "PRODUCT_REMOVED",
-                "message": "One or more items in your cart are no longer available. Please remove them to continue.",
+                "message": "Um ou mais itens da sua sacola não estão mais disponíveis. Remova-os para continuar.",
                 "product_ids": missing_product_ids,
             },
         )
@@ -482,7 +482,7 @@ def place_order(
                 status_code=409,
                 detail={
                     "code": "PRICE_CHANGED",
-                    "message": "The price of one or more items changed. Review and confirm to continue.",
+                    "message": "O preço de um ou mais itens mudou. Confira e confirme para continuar.",
                     "changes": price_changes,
                 },
             )
@@ -572,11 +572,11 @@ def update_order_status(
 ):
     admin_token = os.environ.get("ADMIN_TOKEN")
     if not admin_token or not x_admin_token or not secrets.compare_digest(x_admin_token, admin_token):
-        raise HTTPException(status_code=403, detail="Invalid admin token")
+        raise HTTPException(status_code=403, detail="Token administrativo inválido")
 
     order = db.query(models.Order).filter(models.Order.id == order_id).first()
     if not order:
-        raise HTTPException(status_code=404, detail="Order not found")
+        raise HTTPException(status_code=404, detail="Pedido não encontrado")
 
     order.status = payload.status
     db.commit()
@@ -655,7 +655,7 @@ def update_cart_item(session_id: str, item_id: int, update: CartItemUpdate, db: 
         .first()
     )
     if not item:
-        raise HTTPException(status_code=404, detail="Item not found")
+        raise HTTPException(status_code=404, detail="Item não encontrado")
     item.quantity = update.quantity
     db.commit()
     return {"message": "Quantity updated"}

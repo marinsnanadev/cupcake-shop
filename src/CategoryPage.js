@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { imageMap } from './imageMap';
 import { API_BASE } from './apiConfig';
 import { formatPrice } from './formatPrice';
+import { STORE_NAME } from './storeConfig';
 import './Nav.css';
 import './CategoryPage.css';
 
@@ -19,7 +20,7 @@ function CategoryPage({ category, cartItemsCount, onOpenCart, onBackToShop, onBa
     setLoading(true);
     fetch(`${API_BASE}/products/category/${category.name}`)
       .then((res) => {
-        if (!res.ok) throw new Error('Error fetching products');
+        if (!res.ok) throw new Error('Não foi possível carregar os produtos.');
         return res.json();
       })
       .then((data) => {
@@ -57,15 +58,15 @@ function CategoryPage({ category, cartItemsCount, onOpenCart, onBackToShop, onBa
       <nav className="site-nav">
         <div className="nav-actions">
           <button type="button" className="nav-back-btn" onClick={onBackToShop}>
-            ← Back to shop
+            ← Voltar às categorias
           </button>
           <button type="button" className="nav-back-btn" onClick={onBackToHome}>
-            Home
+            Início
           </button>
         </div>
-        <span className="nav-mark">VIOLET</span>
+        <span className="nav-mark">{STORE_NAME}</span>
         <div style={{ position: 'relative' }}>
-          <button type="button" className="nav-bag" aria-label="View bag" onClick={onOpenCart}>
+          <button type="button" className="nav-bag" aria-label="Ver sacola" onClick={onOpenCart}>
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.6">
               <path d="M6 8h12l-1 12H7L6 8Z" />
               <path d="M9 8V6a3 3 0 0 1 6 0v2" />
@@ -78,9 +79,9 @@ function CategoryPage({ category, cartItemsCount, onOpenCart, onBackToShop, onBa
       <main className="category-page">
         <section className="category-hero">
           <div className="category-hero-copy">
-            <p className="eyebrow">Category edit</p>
-            <h1>{category?.name ?? 'Collection'}</h1>
-            <p>{category?.description ?? 'Browse the latest pieces in this edit.'}</p>
+            <p className="eyebrow">Nossos cupcakes</p>
+            <h1>{category?.name ?? 'Categoria'}</h1>
+            <p>{category?.description ?? 'Conheça nossos sabores.'}</p>
           </div>
         </section>
 
@@ -93,22 +94,22 @@ function CategoryPage({ category, cartItemsCount, onOpenCart, onBackToShop, onBa
                 className={`filter-pill ${activeFilter === filter ? 'is-active' : ''}`}
                 onClick={() => setActiveFilter(filter)}
               >
-                {filter === 'all' ? 'All' : filter === 'new' ? 'New' : 'Featured'}
+                {filter === 'all' ? 'Todos' : filter === 'new' ? 'Novidades' : 'Destaques'}
               </button>
             ))}
           </div>
 
           <label className="sort-control">
-            <span>Sort price</span>
+            <span>Ordenar por preço</span>
             <select value={sortBy} onChange={(event) => setSortBy(event.target.value)}>
-              <option value="price-low">Low to High</option>
-              <option value="price-high">High to Low</option>
+              <option value="price-low">Menor preço</option>
+              <option value="price-high">Maior preço</option>
             </select>
           </label>
         </section>
 
-        {loading && <p className="shop-loading">Loading products...</p>}
-        {error && <p className="shop-error">Error: {error}</p>}
+        {loading && <p className="shop-loading">Carregando produtos...</p>}
+        {error && <p className="shop-error">Erro: {error}</p>}
 
         {!loading && !error && (
           <section className="category-grid">
@@ -119,7 +120,7 @@ function CategoryPage({ category, cartItemsCount, onOpenCart, onBackToShop, onBa
                     <img src={imageMap[item.image]} alt={item.name} />
                   ) : (
                     <div className="category-placeholder">
-                      <span>Photo placeholder</span>
+                      <span>Imagem indisponível</span>
                     </div>
                   )}
                 </div>
@@ -132,9 +133,9 @@ function CategoryPage({ category, cartItemsCount, onOpenCart, onBackToShop, onBa
                     <button
                       type="button"
                       className="purchase-btn"
-                      onClick={() => onAddToCart({ ...item, image: imageMap[item.image], category: category?.name ?? 'Collection' })}
+                      onClick={() => onAddToCart({ ...item, image: imageMap[item.image], category: category?.name ?? 'Categoria' })}
                     >
-                      Add to bag
+                      Adicionar à sacola
                     </button>
                   </div>
                 </div>

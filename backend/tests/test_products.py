@@ -39,4 +39,4 @@ def test_get_products_by_category_found(client, seeded_product):
 def test_get_products_by_category_not_found_returns_404(client, seeded_product):
     response = client.get("/products/category/DoesNotExist")
     assert response.status_code == 404
-    assert response.json() == {"detail": "Category not found"}
+    assert response.json() == {"detail": "Categoria não encontrada"}

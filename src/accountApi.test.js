@@ -54,16 +54,16 @@ test('sends the Idempotency-Key header when one is provided, and omits it otherw
 });
 
 test('a failed request throws using the error message from the response body', async () => {
-  mockFetchOnce({ detail: 'Cart is empty' }, false);
+  mockFetchOnce({ detail: 'Sua sacola está vazia' }, false);
 
-  await expect(placeOrder(null, CHECKOUT_INFO, 'guest-session-abc')).rejects.toThrow('Cart is empty');
+  await expect(placeOrder(null, CHECKOUT_INFO, 'guest-session-abc')).rejects.toThrow('Sua sacola está vazia');
 });
 
 test('a structured error (object detail) exposes code and details instead of stringifying', async () => {
   mockFetchOnce({
     detail: {
       code: 'PRICE_CHANGED',
-      message: 'The price of one or more items changed. Review and confirm to continue.',
+      message: 'O preço de um ou mais itens mudou. Confira e confirme para continuar.',
       changes: [{ product_id: 'red-suit', old_price: 220, new_price: 275 }],
     },
   }, false);
@@ -72,7 +72,7 @@ test('a structured error (object detail) exposes code and details instead of str
     await placeOrder(null, CHECKOUT_INFO, 'guest-session-abc');
     throw new Error('expected placeOrder to reject');
   } catch (err) {
-    expect(err.message).toBe('The price of one or more items changed. Review and confirm to continue.');
+    expect(err.message).toBe('O preço de um ou mais itens mudou. Confira e confirme para continuar.');
     expect(err.code).toBe('PRICE_CHANGED');
     expect(err.details.changes).toEqual([{ product_id: 'red-suit', old_price: 220, new_price: 275 }]);
   }

@@ -2,7 +2,14 @@ import { fireEvent, render, screen, waitFor, within } from '@testing-library/rea
 import CheckoutPage from './CheckoutPage';
 import { CheckoutError } from './accountApi';
 
-const BASE_ITEMS = [{ id: 'red-suit', name: 'Red Suit', price: 220, quantity: 1, image: 'test.jpg', category: 'Suits' }];
+const BASE_ITEMS = [{ id: 'chocolate', name: 'Cupcake de Chocolate', price: 10, quantity: 1, image: 'test.jpg', category: 'Clássicos' }];
+
+function fillRequiredCheckoutFields() {
+  fireEvent.change(screen.getByLabelText('Nome'), { target: { value: 'Pessoa Teste' } });
+  fireEvent.change(screen.getByLabelText('E-mail'), { target: { value: 'teste@exemplo.com' } });
+  fireEvent.change(screen.getByLabelText('Telefone'), { target: { value: '(11) 99999-9999' } });
+  fireEvent.click(screen.getByLabelText('Pix'));
+}
 
 describe('CheckoutPage', () => {
   it('renders the checkout form, summary, and payment options', () => {
@@ -16,10 +23,10 @@ describe('CheckoutPage', () => {
       />
     );
 
-    expect(screen.getByText(/delivery address/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/street, number/i)).toBeInTheDocument();
-    expect(screen.getByText(/shipping/i)).toBeInTheDocument();
-    expect(screen.getByText(/place order/i)).toBeInTheDocument();
+    expect(screen.getByText(/endereço de entrega/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/rua e número/i)).toBeInTheDocument();
+    expect(screen.getByText(/frete/i)).toBeInTheDocument();
+    expect(screen.getByText(/fazer pedido/i)).toBeInTheDocument();
     expect(screen.getByText('Pix')).toBeInTheDocument();
     expect(screen.getByText('Cartão de crédito')).toBeInTheDocument();
     expect(screen.getByText('Dinheiro na entrega')).toBeInTheDocument();
@@ -29,8 +36,8 @@ describe('CheckoutPage', () => {
     const onPlaceOrder = jest.fn()
       .mockRejectedValueOnce(new CheckoutError({
         code: 'PRICE_CHANGED',
-        message: 'The price of one or more items changed. Review and confirm to continue.',
-        changes: [{ product_id: 'red-suit', old_price: 220, new_price: 275 }],
+        message: 'O preço de um ou mais itens mudou. Confira e confirme para continuar.',
+        changes: [{ product_id: 'chocolate', old_price: 10, new_price: 12 }],
       }))
       .mockResolvedValueOnce({});
 
@@ -44,18 +51,19 @@ describe('CheckoutPage', () => {
       />
     );
 
-    fireEvent.click(screen.getByText(/^place order$/i));
+    fillRequiredCheckoutFields();
+    fireEvent.click(screen.getByText(/^fazer pedido$/i));
 
     await waitFor(() => {
-      expect(screen.getByText(/price changed for these items/i)).toBeInTheDocument();
+      expect(screen.getByText(/o preço destes itens mudou/i)).toBeInTheDocument();
     });
-    const priceChangeNotice = screen.getByText(/price changed for these items/i).closest('.checkout-warning-notice');
-    expect(within(priceChangeNotice).getByText(/red suit/i)).toBeInTheDocument();
+    const priceChangeNotice = screen.getByText(/o preço destes itens mudou/i).closest('.checkout-warning-notice');
+    expect(within(priceChangeNotice).getByText(/cupcake de chocolate/i)).toBeInTheDocument();
     // "Place order" is hidden while the price-change notice is showing, so
     // the customer can't accidentally submit the stale price again.
-    expect(screen.queryByText(/^place order$/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/^fazer pedido$/i)).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByText(/accept new prices and continue/i));
+    fireEvent.click(screen.getByText(/aceitar os novos preços e continuar/i));
 
     await waitFor(() => {
       expect(onPlaceOrder).toHaveBeenCalledTimes(2);
@@ -76,7 +84,7 @@ describe('CheckoutPage', () => {
     const onPlaceOrder = jest.fn().mockRejectedValue(new CheckoutError({
       code: 'PRODUCT_REMOVED',
       message: 'One or more items in your cart are no longer available. Please remove them to continue.',
-      product_ids: ['red-suit'],
+      product_ids: ['chocolate'],
     }));
 
     render(
@@ -89,20 +97,21 @@ describe('CheckoutPage', () => {
       />
     );
 
-    fireEvent.click(screen.getByText(/^place order$/i));
+    fillRequiredCheckoutFields();
+    fireEvent.click(screen.getByText(/^fazer pedido$/i));
 
     await waitFor(() => {
-      expect(screen.getByText(/no longer available/i)).toBeInTheDocument();
+      expect(screen.getByText(/não estão mais disponíveis/i)).toBeInTheDocument();
     });
-    const removedNotice = screen.getByText(/no longer available/i).closest('.checkout-warning-notice');
-    expect(within(removedNotice).getByText(/red suit/i)).toBeInTheDocument();
+    const removedNotice = screen.getByText(/não estão mais disponíveis/i).closest('.checkout-warning-notice');
+    expect(within(removedNotice).getByText(/cupcake de chocolate/i)).toBeInTheDocument();
 
-    fireEvent.click(within(removedNotice).getByText(/back to bag/i));
+    fireEvent.click(within(removedNotice).getByText(/voltar à sacola/i));
     expect(onBackToCart).toHaveBeenCalledTimes(1);
   });
 
   it('shows a plain error message for a generic checkout failure', async () => {
-    const onPlaceOrder = jest.fn().mockRejectedValue(new Error('Cart is empty'));
+    const onPlaceOrder = jest.fn().mockRejectedValue(new Error('Sua sacola está vazia'));
 
     render(
       <CheckoutPage
@@ -114,10 +123,11 @@ describe('CheckoutPage', () => {
       />
     );
 
-    fireEvent.click(screen.getByText(/^place order$/i));
+    fillRequiredCheckoutFields();
+    fireEvent.click(screen.getByText(/^fazer pedido$/i));
 
     await waitFor(() => {
-      expect(screen.getByText('Cart is empty')).toBeInTheDocument();
+      expect(screen.getByText('Sua sacola está vazia')).toBeInTheDocument();
     });
   });
 });

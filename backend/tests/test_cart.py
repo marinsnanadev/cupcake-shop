@@ -38,7 +38,7 @@ def test_update_cart_item_in_own_session_succeeds(client, seeded_product):
 def test_update_nonexistent_item_returns_404(client):
     response = client.put("/cart/session-A/item/99999", json={"quantity": 5})
     assert response.status_code == 404
-    assert response.json() == {"detail": "Item not found"}
+    assert response.json() == {"detail": "Item não encontrado"}
 
 
 def test_update_cart_item_from_another_session_is_blocked(client, seeded_product):

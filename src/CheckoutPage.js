@@ -4,6 +4,7 @@ import { formatPrice } from './formatPrice';
 import { PAYMENT_METHODS } from './paymentMethods';
 import { fetchAccount } from './accountApi';
 import { generateIdempotencyKey } from './idempotency';
+import { STORE_NAME } from './storeConfig';
 import './Nav.css';
 import './CartPage.css';
 import './CheckoutPage.css';
@@ -33,7 +34,7 @@ function FormSection({ title, children }) {
 function PaymentMethodSelector({ selectedId, onSelect }) {
     return (
         <div className="checkout-payment-block">
-            <h2>Payment method</h2>
+            <h2>Forma de pagamento</h2>
             <div className="payment-options">
                 {PAYMENT_METHODS.map((method) => (
                     <label
@@ -82,13 +83,13 @@ function OrderSummary({
 
     return (
         <aside className="checkout-summary-card">
-            <h2>Order summary</h2>
+            <h2>Resumo do pedido</h2>
             <div className="checkout-items-list">
                 {items.map((item) => (
                     <div key={item.id} className="checkout-item-row">
                         <div>
                             <p className="checkout-item-name">{item.name}</p>
-                            <p className="checkout-item-meta">Qty {item.quantity} · {item.category}</p>
+                            <p className="checkout-item-meta">Qtd. {item.quantity} · {item.category}</p>
                         </div>
                         <span className="checkout-item-price">{formatPrice(item.price)}</span>
                     </div>
@@ -101,11 +102,11 @@ function OrderSummary({
                     <span>{formatPrice(subtotal)}</span>
                 </div>
                 <div className="summary-row">
-                    <span>Taxes</span>
+                    <span>Impostos</span>
                     <span>{formatPrice(tax)}</span>
                 </div>
                 <div className="summary-row">
-                    <span>Shipping</span>
+                    <span>Frete</span>
                     <span>{formatPrice(shipping)}</span>
                 </div>
                 <div className="summary-row total-row">
@@ -118,21 +119,21 @@ function OrderSummary({
 
             {removedProductIds && (
                 <div className="checkout-warning-notice">
-                    <p>These items are no longer available and were removed from your bag:</p>
+                    <p>Estes itens não estão mais disponíveis. Remova-os da sua sacola:</p>
                     <ul>
                         {removedProductIds.map((id) => (
                             <li key={id}>{nameById[id] || id}</li>
                         ))}
                     </ul>
                     <button type="button" className="checkout-btn checkout-btn-secondary" onClick={onBackToCart}>
-                        Back to bag
+                        Voltar à sacola
                     </button>
                 </div>
             )}
 
             {priceChanges && (
                 <div className="checkout-warning-notice">
-                    <p>The price changed for these items since you added them:</p>
+                    <p>O preço destes itens mudou desde que você os adicionou:</p>
                     <ul>
                         {priceChanges.map((change) => (
                             <li key={change.product_id}>
@@ -147,14 +148,14 @@ function OrderSummary({
                         onClick={onConfirmPriceChanges}
                         disabled={isSubmitting}
                     >
-                        Accept new prices and continue
+                        Aceitar os novos preços e continuar
                     </button>
                 </div>
             )}
 
             {!priceChanges && !removedProductIds && (
                 <button type="button" className="checkout-btn" onClick={onPlaceOrder} disabled={isSubmitting}>
-                    {isSubmitting ? 'Placing order...' : 'Place order'}
+                    {isSubmitting ? 'Enviando pedido...' : 'Fazer pedido'}
                 </button>
             )}
         </aside>
@@ -228,13 +229,13 @@ function CheckoutPage({ items, cartItemsCount, onBackToCart, onPlaceOrder, user,
         const missingField = requiredClientFields.find(([field]) => !form[field].trim());
 
         if (missingField) {
-            setError('Complete all client information fields before placing your order.');
+            setError('Preencha seu nome, e-mail e telefone para continuar.');
             document.getElementById(missingField[1])?.focus();
             return;
         }
 
         if (!selectedPaymentMethod) {
-            setError('Choose a payment method before placing your order.');
+            setError('Escolha uma forma de pagamento para continuar.');
             document.querySelector('.payment-option input')?.focus();
             return;
         }
@@ -258,7 +259,7 @@ function CheckoutPage({ items, cartItemsCount, onBackToCart, onPlaceOrder, user,
             } else if (err.code === 'PRODUCT_REMOVED') {
                 setRemovedProductIds(err.details.product_ids);
             } else {
-                setError(err.message || 'Something went wrong. Please try again.');
+                setError(err.message || 'Algo deu errado. Tente novamente.');
             }
         } finally {
             setIsSubmitting(false);
@@ -272,11 +273,11 @@ function CheckoutPage({ items, cartItemsCount, onBackToCart, onPlaceOrder, user,
 
             <nav className="site-nav">
                 <button type="button" className="nav-back-btn" onClick={onBackToCart}>
-                    ← Back to bag
+                    ← Voltar à sacola
                 </button>
-                <span className="nav-mark">VIOLET</span>
+                <span className="nav-mark">{STORE_NAME}</span>
                 <div style={{ position: 'relative' }}>
-                    <button type="button" className="nav-bag" aria-label="View bag" onClick={onBackToCart}>
+                    <button type="button" className="nav-bag" aria-label="Ver sacola" onClick={onBackToCart}>
                         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.6">
                             <path d="M6 8h12l-1 12H7L6 8Z" />
                             <path d="M9 8V6a3 3 0 0 1 6 0v2" />
@@ -289,63 +290,63 @@ function CheckoutPage({ items, cartItemsCount, onBackToCart, onPlaceOrder, user,
             <main className="checkout-page">
                 <section className="checkout-hero">
                     <div className="checkout-hero-copy">
-                        <p className="eyebrow">Secure checkout</p>
-                        <h1>Complete your order</h1>
-                        <p>Enter your delivery details, review your bag, and choose the payment method that suits you best.</p>
+                        <p className="eyebrow">Finalização segura</p>
+                        <h1>Finalize seu pedido</h1>
+                        <p>Informe seus dados, confira sua sacola e escolha a forma de pagamento.</p>
                     </div>
                 </section>
 
                 <div className="checkout-grid">
                     <section className="checkout-form-card">
-                        <FormSection title="Client information">
+                        <FormSection title="Seus dados">
                             <FormField
                                 id="client-name"
-                                label="Name"
+                                label="Nome"
                                 type="text"
-                                placeholder="John Smith"
+                                placeholder="Seu nome"
                                 value={form.name}
                                 onChange={updateField('name')}
                                 required
                             />
                             <FormField
                                 id="client-email"
-                                label="Email"
+                                label="E-mail"
                                 type="email"
-                                placeholder="johnsmith@example.com"
+                                placeholder="voce@exemplo.com"
                                 value={form.email}
                                 onChange={updateField('email')}
                                 required
                             />
                             <FormField
                                 id="client-phone"
-                                label="Phone"
+                                label="Telefone"
                                 type="tel"
-                                placeholder="+1 (555) 123-4567"
+                                placeholder="(11) 99999-9999"
                                 value={form.phone}
                                 onChange={updateField('phone')}
                                 required
                             />
                         </FormSection>
 
-                        <FormSection title="Delivery address">
+                        <FormSection title="Endereço de entrega">
                             <FormField
                                 id="delivery-address"
-                                label="Street, number"
-                                placeholder="Rio Street, 123"
+                                label="Rua e número"
+                                placeholder="Rua das Flores, 123"
                                 value={form.address_street}
                                 onChange={updateField('address_street')}
                             />
                             <FormField
                                 id="delivery-city-state"
-                                label="City, State"
-                                placeholder="Rio de Janeiro, Rio de Janeiro"
+                                label="Cidade e estado"
+                                placeholder="São Paulo, SP"
                                 value={form.address_city_state}
                                 onChange={updateField('address_city_state')}
                             />
                             <FormField
                                 id="delivery-zip-code"
-                                label="ZIP Code"
-                                placeholder="20000-000"
+                                label="CEP"
+                                placeholder="00000-000"
                                 value={form.address_zip}
                                 onChange={updateField('address_zip')}
                             />

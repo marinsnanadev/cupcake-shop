@@ -4,8 +4,8 @@ import Footer from './Footer';
 import Reveal from './Reveal';
 import ToastNotifications from './ToastNotifications';
 import { formatPrice } from './formatPrice';
-import whiteMiniPurse from './assets/clothing/purses/white-mini-purse.jpg';
-import { collections, featuredProducts, chunkCollections, blackDress, whiteSuit } from './homeData';
+import { collections, featuredProducts, chunkCollections, heroImages, storyImage } from './homeData';
+import { STORE_NAME } from './storeConfig';
 
 function HomePage({ cartItemsCount, onOpenCart, onOpenShop, onSelectCategory, addToCart, checkoutComplete, toasts, user, onLogout, onOpenLogin, onOpenAccount }) {
   const [frontImageIndex, setFrontImageIndex] = useState(0);
@@ -55,8 +55,7 @@ function HomePage({ cartItemsCount, onOpenCart, onOpenShop, onSelectCategory, ad
         onOpenCart={onOpenCart}
         onOpenShop={onOpenShop}
         frontImageIndex={frontImageIndex}
-        blackDress={blackDress}
-        whiteSuit={whiteSuit}
+        heroImages={heroImages}
         user={user}
         onLogout={onLogout}
         onOpenLogin={onOpenLogin}
@@ -69,8 +68,8 @@ function HomePage({ cartItemsCount, onOpenCart, onOpenShop, onSelectCategory, ad
           <div className="toast-content">
             <span className="toast-icon">✓</span>
             <div className="toast-text">
-              <p className="toast-title">Order placed successfully</p>
-              <p className="toast-price">Thanks for shopping with VIOLET</p>
+              <p className="toast-title">Pedido realizado com sucesso!</p>
+              <p className="toast-price">Obrigado por escolher a {STORE_NAME}.</p>
             </div>
           </div>
         </div>
@@ -80,15 +79,15 @@ function HomePage({ cartItemsCount, onOpenCart, onOpenShop, onSelectCategory, ad
         <Reveal as="section" className="collections-section" id="shop">
           <div className="collection-header">
             <div className="section-heading">
-              <p className="eyebrow">Curated forms</p>
-              <h2>Shop by category</h2>
+              <p className="eyebrow">Feitos para adoçar seu dia</p>
+              <h2>Escolha sua categoria</h2>
             </div>
             {isCompactView && (
               <div className="collection-nav-buttons">
                 <button
                   type="button"
                   className="collection-nav-btn collection-prev-btn"
-                  aria-label="Show previous categories"
+                  aria-label="Mostrar categorias anteriores"
                   onClick={() => setCollectionOffset((prev) => (prev - 1 + collectionSlides.length) % collectionSlides.length)}
                 >
                   <span aria-hidden="true">←</span>
@@ -96,7 +95,7 @@ function HomePage({ cartItemsCount, onOpenCart, onOpenShop, onSelectCategory, ad
                 <button
                   type="button"
                   className="collection-nav-btn collection-next-btn"
-                  aria-label="Show more categories"
+                  aria-label="Mostrar mais categorias"
                   onClick={() => setCollectionOffset((prev) => (prev + 1) % collectionSlides.length)}
                 >
                   <span aria-hidden="true">→</span>
@@ -143,13 +142,13 @@ function HomePage({ cartItemsCount, onOpenCart, onOpenShop, onSelectCategory, ad
         <Reveal as="section" className="featured-section" id="story">
           <div className="editorial-panel">
             <div className="editorial-image">
-              <img src={whiteMiniPurse} alt="Statement bag and accessories" />
+              <img src={storyImage} alt="Cupcake de chocolate com cobertura cremosa" />
             </div>
             <div className="editorial-copy">
-              <p className="eyebrow">Why VIOLET</p>
-              <h2>&ldquo;Minimal layers, maximum presence&rdquo;</h2>
+              <p className="eyebrow">Por que escolher a {STORE_NAME}?</p>
+              <h2>&ldquo;Pequenos momentos, grandes sabores&rdquo;</h2>
               <p>
-                Thoughtful silhouettes, tactile fabrics, and elevated essentials designed to bring polish to your everyday wardrobe.
+                Cupcakes artesanais, preparados com ingredientes selecionados e carinho em cada detalhe.
               </p>
             </div>
           </div>
@@ -164,7 +163,7 @@ function HomePage({ cartItemsCount, onOpenCart, onOpenShop, onSelectCategory, ad
                   <span>{product.category}</span>
                   <h3>{product.name}</h3>
                   <p className="product-price">{formatPrice(product.price)}</p>
-                  <button type="button" className="purchase-btn" onClick={() => addToCart(product)}>Add to bag</button>
+                  <button type="button" className="purchase-btn" onClick={() => addToCart(product)}>Adicionar à sacola</button>
                 </div>
               </article>
             ))}
@@ -176,16 +175,16 @@ function HomePage({ cartItemsCount, onOpenCart, onOpenShop, onSelectCategory, ad
 
       <section className="footer-extended">
         <div className="customer-service">
-          <h3>Customer Service</h3>
+          <h3>Atendimento</h3>
           <ul>
-            <li><a href="#shop">Shop</a></li>
-            <li><a href="#story">Story</a></li>
-            <li><a href="mailto:">Contact Us</a></li>
+            <li><a href="#shop">Cardápio</a></li>
+            <li><a href="#story">Nossa história</a></li>
+            <li><a href="mailto:">Fale conosco</a></li>
           </ul>
         </div>
 
         <div className="social-media">
-          <h3>Follow Us</h3>
+          <h3>Siga a gente</h3>
           <ul>
             <li><button type="button" className="footer-social-link">Instagram</button></li>
             <li><button type="button" className="footer-social-link">Facebook</button></li>
@@ -194,19 +193,19 @@ function HomePage({ cartItemsCount, onOpenCart, onOpenShop, onSelectCategory, ad
         </div>
 
         <div className="newsletter">
-          <h3>Newsletter</h3>
-          <p>Sign up for our newsletter to receive the latest updates and offers.</p>
+          <h3>Novidades</h3>
+          <p>Cadastre seu e-mail para receber novidades e ofertas especiais.</p>
           <form>
-            <input type="email" placeholder="Your email address" />
-            <button type="submit">Subscribe</button>
+            <input type="email" placeholder="Seu e-mail" />
+            <button type="submit">Cadastrar</button>
           </form>
         </div>
 
         <div className="legal">
-          <h3>Legal</h3>
+          <h3>Informações</h3>
           <ul>
-            <li><a href="/privacy-policy">Privacy Policy</a></li>
-            <li><a href="/terms-of-service">Terms of Service</a></li>
+            <li><a href="/privacy-policy">Política de privacidade</a></li>
+            <li><a href="/terms-of-service">Termos de uso</a></li>
           </ul>
         </div>
       </section>

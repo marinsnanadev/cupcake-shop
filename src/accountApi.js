@@ -30,7 +30,7 @@ export class CheckoutError extends Error {
   constructor(detail) {
     const message = typeof detail === 'string'
       ? detail
-      : detail?.message || 'Error completing order';
+      : detail?.message || 'Não foi possível concluir o pedido.';
     super(message);
     this.name = 'CheckoutError';
     this.code = typeof detail === 'object' && detail ? detail.code : undefined;

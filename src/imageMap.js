@@ -1,4 +1,4 @@
-import fallbackImage from './assets/images/splash.jpg';
+const fallbackImage = `${process.env.PUBLIC_URL}/moon.png`;
 
 const cupcakeAssets = process.env.NODE_ENV === 'test'
   ? { keys: () => [] }
