@@ -50,6 +50,7 @@ def test_place_order_computes_totals_from_server_side_cart(client, seeded_produc
 
     assert len(order["items"]) == 1
     assert order["items"][0]["quantity"] == 2
+    assert order["status"] == "received"
     assert order["subtotal"] == 20.0  # 10 * 2, calculated on the server
     assert order["tax"] == round(20.0 * 0.08, 2)
     assert order["shipping"] == 12.0
@@ -118,6 +119,71 @@ def test_account_lists_orders_most_recent_first(client, seeded_product):
     assert len(account["orders"]) == 2
     assert account["orders"][0]["id"] == second_order["id"]
     assert account["orders"][1]["id"] == first_order["id"]
+    assert account["orders"][0]["status"] == "received"
+    assert account["orders"][1]["status"] == "received"
+
+
+def test_update_order_status_with_admin_token(client, seeded_product, monkeypatch):
+    monkeypatch.setenv("ADMIN_TOKEN", "test-admin-token")
+    user = register_user(client)
+    headers = auth_headers(user["access_token"])
+    client.post("/cart/me/add", json={"product_id": "chocolate", "quantity": 1}, headers=headers)
+    order = client.post("/orders", json=CHECKOUT_PAYLOAD, headers=headers).json()
+
+    response = client.patch(
+        f"/orders/{order['id']}/status",
+        json={"status": "preparing"},
+        headers={"X-Admin-Token": "test-admin-token"},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["status"] == "preparing"
+    account = client.get("/account", headers=headers).json()
+    assert account["orders"][0]["status"] == "preparing"
+
+
+def test_update_order_status_requires_admin_token_regression(client, monkeypatch):
+    monkeypatch.setenv("ADMIN_TOKEN", "test-admin-token")
+
+    response = client.patch("/orders/1/status", json={"status": "preparing"})
+
+    assert response.status_code == 403
+
+
+def test_update_order_status_rejects_wrong_admin_token(client, monkeypatch):
+    monkeypatch.setenv("ADMIN_TOKEN", "test-admin-token")
+
+    response = client.patch(
+        "/orders/1/status",
+        json={"status": "preparing"},
+        headers={"X-Admin-Token": "wrong-token"},
+    )
+
+    assert response.status_code == 403
+
+
+def test_update_order_status_rejects_invalid_status(client, monkeypatch):
+    monkeypatch.setenv("ADMIN_TOKEN", "test-admin-token")
+
+    response = client.patch(
+        "/orders/1/status",
+        json={"status": "baking"},
+        headers={"X-Admin-Token": "test-admin-token"},
+    )
+
+    assert response.status_code == 422
+
+
+def test_update_order_status_returns_404_for_missing_order(client, monkeypatch):
+    monkeypatch.setenv("ADMIN_TOKEN", "test-admin-token")
+
+    response = client.patch(
+        "/orders/999/status",
+        json={"status": "delivered"},
+        headers={"X-Admin-Token": "test-admin-token"},
+    )
+
+    assert response.status_code == 404
 
 
 def test_account_is_isolated_per_user(client, seeded_product):

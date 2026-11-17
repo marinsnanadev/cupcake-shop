@@ -3,6 +3,8 @@ from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Float, Date
 from sqlalchemy.orm import relationship
 from .database import Base
 
+ORDER_STATUSES = ("received", "preparing", "out_for_delivery", "delivered")
+
 class Category(Base):
     __tablename__ = "categories"
 
@@ -107,6 +109,7 @@ class Order(Base):
     address_city_state = Column(String)
     address_zip = Column(String)
     payment_method = Column(String)
+    status = Column(String, default="received", nullable=False)
 
     subtotal = Column(Float)
     tax = Column(Float)

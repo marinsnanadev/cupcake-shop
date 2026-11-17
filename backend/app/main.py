@@ -1,5 +1,6 @@
 import logging
 import os
+import secrets
 from typing import Optional
 
 from dotenv import load_dotenv
@@ -7,7 +8,7 @@ from fastapi import FastAPI, Depends, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, field_validator
 
 from . import models
 from .database import get_db
@@ -106,6 +107,17 @@ class AccountUpdate(BaseModel):
     default_address_city_state: Optional[str] = None
     default_address_zip: Optional[str] = None
     default_payment_method: Optional[str] = None
+
+
+class OrderStatusUpdate(BaseModel):
+    status: str
+
+    @field_validator("status")
+    @classmethod
+    def validate_status(cls, status):
+        if status not in models.ORDER_STATUSES:
+            raise ValueError("Invalid order status")
+        return status
 
 
 @app.get("/")
@@ -231,6 +243,7 @@ def _serialize_order(order: models.Order):
     return {
         "id": order.id,
         "created_at": order.created_at.isoformat() if order.created_at else None,
+        "status": order.status,
         "payment_method": order.payment_method,
         "address_street": order.address_street,
         "address_city_state": order.address_city_state,
@@ -530,6 +543,27 @@ def place_order(
         "checkout.success %s order_id=%s total=%.2f items=%d",
         owner_desc, order.id, order.total, len(order.items),
     )
+    return _serialize_order(order)
+
+
+@app.patch("/orders/{order_id}/status")
+def update_order_status(
+    order_id: int,
+    payload: OrderStatusUpdate,
+    x_admin_token: Optional[str] = Header(None, alias="X-Admin-Token"),
+    db: Session = Depends(get_db),
+):
+    admin_token = os.environ.get("ADMIN_TOKEN")
+    if not admin_token or not x_admin_token or not secrets.compare_digest(x_admin_token, admin_token):
+        raise HTTPException(status_code=403, detail="Invalid admin token")
+
+    order = db.query(models.Order).filter(models.Order.id == order_id).first()
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    order.status = payload.status
+    db.commit()
+    db.refresh(order)
     return _serialize_order(order)
 
 

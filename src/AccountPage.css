@@ -173,6 +173,13 @@
   line-height: 1.5;
 }
 
+.account-order-status {
+  margin: 0.4rem 0 0;
+  color: var(--accent);
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
 @media (max-width: 720px) {
   .account-grid {
     grid-template-columns: 1fr;

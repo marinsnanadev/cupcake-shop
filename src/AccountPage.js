@@ -13,6 +13,13 @@ function formatOrderDate(isoString) {
   return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 }
 
+const ORDER_STATUS_LABELS = {
+  received: 'Recebido',
+  preparing: 'Em preparo',
+  out_for_delivery: 'Saiu para entrega',
+  delivered: 'Entregue',
+};
+
 function AccountPage({ token, cartItemsCount, onOpenCart, onBackToHome }) {
   const [account, setAccount] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -199,6 +206,9 @@ function AccountPage({ token, cartItemsCount, onOpenCart, onBackToHome }) {
                         </div>
                         <p className="account-order-items">
                           {order.items.map((item) => `${item.quantity}× ${item.name}`).join(', ')}
+                        </p>
+                        <p className="account-order-status">
+                          Status: {ORDER_STATUS_LABELS[order.status] || order.status}
                         </p>
                       </li>
                     ))}
