@@ -48,7 +48,7 @@ O dono da loja tinha uma experiência frustrante com uma empresa anterior e prec
 
 | Item | PIT I | PIT II | Motivo |
 |---|---|---|---|
-| Plataforma | Aplicativo mobile | Web app responsivo | A Situação 2 permite web ou mobile e o tempo disponível era curto |
+| Plataforma | Aplicativo mobile | Web app responsivo | A Situação 2 permite web ou mobile |
 | Administração | Perfil de administrador | Rota protegida por token | Entrega o essencial (atualizar status) sem uma tela administrativa |
 | Entregador | Perfil próprio | Status atualizado pelo administrador | Simplifica o fluxo mantendo o acompanhamento do pedido |
 | Pagamento | Pagamento eletrônico | Pagamento simulado | Evita integração com gateway real |
