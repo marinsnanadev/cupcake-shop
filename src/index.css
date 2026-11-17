@@ -1,0 +1,20 @@
+body {
+  margin: 0;
+  font-family: 'Inter', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  color: inherit;
+}
+
+button,
+a {
+  font: inherit;
+}
