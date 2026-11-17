@@ -27,68 +27,14 @@
   border-top: 1px solid rgba(185, 79, 115, 0.14);
 }
 
-.collection-nav-buttons {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-}
-
-.collection-nav-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 3rem;
-  height: 3rem;
-  border: 1px solid rgba(185, 79, 115, 0.2);
-  border-radius: 50%;
-  background: #fff;
-  color: var(--accent);
-  cursor: pointer;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-@media (min-width: 1025px) {
-  .collection-nav-buttons {
-    display: none;
-  }
-}
-
-.collection-next-btn:hover {
-  transform: translateX(3px);
-  box-shadow: 0 10px 24px rgba(185, 79, 115, 0.12);
-}
-
-.collection-prev-btn:hover {
-  transform: translateX(-3px);
-  box-shadow: 0 10px 24px rgba(185, 79, 115, 0.12);
-}
-
-.collection-nav-btn span {
-  font-size: 1.2rem;
-  line-height: 1;
-}
-
 .collection-grid {
-  overflow: hidden;
+  display: flex;
+  gap: 1.25rem;
   padding: 1rem 0 0.2rem;
 }
 
-.collection-track {
-  display: flex;
-  width: 100%;
-  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: transform;
-}
-
-.collection-slide {
-  display: flex;
-  flex: 0 0 100%;
-  gap: 1.25rem;
-  min-width: 100%;
-}
-
 @media (max-width: 1024px) {
-  .collection-slide {
+  .collection-grid {
     flex-wrap: wrap;
     justify-content: space-between;
     gap: 1.25rem;

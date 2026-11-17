@@ -4,15 +4,11 @@ import Footer from './Footer';
 import Reveal from './Reveal';
 import ToastNotifications from './ToastNotifications';
 import { formatPrice } from './formatPrice';
-import { collections, featuredProducts, chunkCollections, heroImages, storyImage } from './homeData';
+import { collections, featuredProducts, heroImages, storyImage } from './homeData';
 import { STORE_NAME } from './storeConfig';
 
 function HomePage({ cartItemsCount, onOpenCart, onOpenShop, onSelectCategory, addToCart, checkoutComplete, toasts, user, onLogout, onOpenLogin, onOpenAccount }) {
   const [frontImageIndex, setFrontImageIndex] = useState(0);
-  const [collectionOffset, setCollectionOffset] = useState(0);
-  const [isCompactView, setIsCompactView] = useState(() => typeof window !== 'undefined' ? window.innerWidth <= 1024 : false);
-
-  const collectionSlides = isCompactView ? chunkCollections(collections, 4) : [collections];
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -20,22 +16,6 @@ function HomePage({ cartItemsCount, onOpenCart, onOpenShop, onSelectCategory, ad
     }, 3000);
     return () => clearInterval(interval);
   }, []);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsCompactView(window.innerWidth <= 1024);
-    };
-
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  useEffect(() => {
-    if (!isCompactView) {
-      setCollectionOffset(0);
-    }
-  }, [isCompactView]);
 
   const handleCategorySelect = (item) => {
     onSelectCategory({
@@ -82,60 +62,31 @@ function HomePage({ cartItemsCount, onOpenCart, onOpenShop, onSelectCategory, ad
               <p className="eyebrow">Feitos para adoçar seu dia</p>
               <h2>Escolha sua categoria</h2>
             </div>
-            {isCompactView && (
-              <div className="collection-nav-buttons">
-                <button
-                  type="button"
-                  className="collection-nav-btn collection-prev-btn"
-                  aria-label="Mostrar categorias anteriores"
-                  onClick={() => setCollectionOffset((prev) => (prev - 1 + collectionSlides.length) % collectionSlides.length)}
-                >
-                  <span aria-hidden="true">←</span>
-                </button>
-                <button
-                  type="button"
-                  className="collection-nav-btn collection-next-btn"
-                  aria-label="Mostrar mais categorias"
-                  onClick={() => setCollectionOffset((prev) => (prev + 1) % collectionSlides.length)}
-                >
-                  <span aria-hidden="true">→</span>
-                </button>
-              </div>
-            )}
           </div>
           <div className="collection-grid">
-            <div
-              className="collection-track"
-              style={{ transform: isCompactView ? `translateX(-${collectionOffset * 100}%)` : 'translateX(0)' }}
-            >
-              {collectionSlides.map((slide, index) => (
-                <div key={index} className="collection-slide">
-                  {slide.map((item) => (
-                    <article
-                      key={item.title}
-                      className="collection-card"
-                      role="button"
-                      tabIndex={0}
-                      onClick={() => handleCategorySelect(item)}
-                      onKeyDown={(event) => {
-                        if (event.key === 'Enter' || event.key === ' ') {
-                          event.preventDefault();
-                          handleCategorySelect(item);
-                        }
-                      }}
-                    >
-                      <div className="card-image">
-                        <img src={item.image} alt={item.title} />
-                      </div>
-                      <div className="card-content">
-                        <h3>{item.title}</h3>
-                        <p>{item.blurb}</p>
-                      </div>
-                    </article>
-                  ))}
+            {collections.map((item) => (
+              <article
+                key={item.title}
+                className="collection-card"
+                role="button"
+                tabIndex={0}
+                onClick={() => handleCategorySelect(item)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    handleCategorySelect(item);
+                  }
+                }}
+              >
+                <div className="card-image">
+                  <img src={item.image} alt={item.title} />
                 </div>
-              ))}
-            </div>
+                <div className="card-content">
+                  <h3>{item.title}</h3>
+                  <p>{item.blurb}</p>
+                </div>
+              </article>
+            ))}
           </div>
         </Reveal>
 
