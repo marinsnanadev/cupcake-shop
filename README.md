@@ -2,7 +2,7 @@
 
 Loja virtual de cupcakes gourmet, com catálogo por categorias, sacola de compras, contas de clientes e finalização de pedidos.
 
-- Site publicado: **[inserir link do site]**
+- Site publicado: https://cupcake-shop-steel.vercel.app/
 - Vídeo de apresentação: **[inserir link do vídeo]**
 - Vídeo de demonstração: **[inserir link do vídeo]**
 
