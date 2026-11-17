@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { registerUser, loginUser, fetchCurrentUser } from './authApi';
+import { NETWORK_ERROR_MESSAGE } from './apiFetch';
 
 const TOKEN_STORAGE_KEY = 'cupcake_auth_token';
 
@@ -7,6 +8,7 @@ export function useAuth() {
   const [token, setToken] = useState(() => localStorage.getItem(TOKEN_STORAGE_KEY));
   const [user, setUser] = useState(null);
   const [isAuthReady, setIsAuthReady] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (!token) {
@@ -14,8 +16,15 @@ export function useAuth() {
       return;
     }
     fetchCurrentUser(token)
-      .then((currentUser) => setUser(currentUser))
-      .catch(() => {
+      .then((currentUser) => {
+        setUser(currentUser);
+        setError(null);
+      })
+      .catch((err) => {
+        if (err.message === NETWORK_ERROR_MESSAGE) {
+          setError(err.message);
+          return;
+        }
         // expired/invalid token: clear the local session
         localStorage.removeItem(TOKEN_STORAGE_KEY);
         setToken(null);
@@ -29,6 +38,7 @@ export function useAuth() {
     localStorage.setItem(TOKEN_STORAGE_KEY, data.access_token);
     setToken(data.access_token);
     setUser(data.user);
+    setError(null);
     return data.user;
   }, []);
 
@@ -37,6 +47,7 @@ export function useAuth() {
     localStorage.setItem(TOKEN_STORAGE_KEY, data.access_token);
     setToken(data.access_token);
     setUser(data.user);
+    setError(null);
     return data.user;
   }, []);
 
@@ -44,7 +55,8 @@ export function useAuth() {
     localStorage.removeItem(TOKEN_STORAGE_KEY);
     setToken(null);
     setUser(null);
+    setError(null);
   }, []);
 
-  return { user, token, isAuthReady, isAuthenticated: Boolean(user), login, register, logout };
+  return { user, token, isAuthReady, error, isAuthenticated: Boolean(user), login, register, logout };
 }

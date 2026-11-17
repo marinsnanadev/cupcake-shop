@@ -3,6 +3,7 @@ import Footer from './Footer';
 import { formatPrice } from './formatPrice';
 import { PAYMENT_METHODS } from './paymentMethods';
 import { fetchAccount, updateAccount } from './accountApi';
+import { NETWORK_ERROR_MESSAGE } from './apiFetch';
 import { STORE_NAME } from './storeConfig';
 import './Nav.css';
 import './CartPage.css';
@@ -38,7 +39,11 @@ function AccountPage({ token, cartItemsCount, onOpenCart, onBackToHome }) {
         setAccount(data);
         setError(null);
       })
-      .catch(() => setError('Não foi possível carregar sua conta. Tente novamente.'))
+      .catch((err) => setError(
+        err.message === NETWORK_ERROR_MESSAGE
+          ? err.message
+          : 'Não foi possível carregar sua conta. Tente novamente.'
+      ))
       .finally(() => setLoading(false));
   };
 

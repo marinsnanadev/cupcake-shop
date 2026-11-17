@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import App from './App';
 
 test('renders the splash screen with Cupcake Shop and opens the storefront when the button is clicked', async () => {
@@ -11,4 +11,14 @@ test('renders the splash screen with Cupcake Shop and opens the storefront when 
   await waitFor(() => {
     expect(screen.getByText(/escolha sua categoria/i)).toBeInTheDocument();
   });
+
+  const serviceLinks = within(screen.getByRole('heading', { name: 'Atendimento' }).parentElement);
+  expect(serviceLinks.getByRole('link', { name: 'Cardápio' })).toHaveAttribute('href', '#shop');
+  expect(serviceLinks.getByRole('link', { name: 'Nossa história' })).toHaveAttribute('href', '#story');
+  expect(serviceLinks.getByRole('link', { name: 'Fale conosco' })).toHaveAttribute(
+    'href',
+    'mailto:contato@cupcakeshop.example'
+  );
+  expect(screen.queryByText(/instagram|facebook|twitter|novidades|política de privacidade|termos de uso/i))
+    .not.toBeInTheDocument();
 });

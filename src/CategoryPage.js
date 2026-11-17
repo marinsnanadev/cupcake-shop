@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { imageMap } from './imageMap';
 import { API_BASE } from './apiConfig';
+import { apiFetch } from './apiFetch';
 import { formatPrice } from './formatPrice';
 import { STORE_NAME } from './storeConfig';
 import './Nav.css';
@@ -18,7 +19,7 @@ function CategoryPage({ category, cartItemsCount, onOpenCart, onBackToShop, onBa
     if (!category?.name) return;
 
     setLoading(true);
-    fetch(`${API_BASE}/products/category/${category.name}`)
+    apiFetch(`${API_BASE}/products/category/${category.name}`)
       .then((res) => {
         if (!res.ok) throw new Error('Não foi possível carregar os produtos.');
         return res.json();

@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
 import Footer from './Footer';
 import { formatPrice } from './formatPrice';
+import { calculateOrderTotals } from './orderPricing';
 import { STORE_NAME } from './storeConfig';
 import './Nav.css';
 import './CartPage.css';
 
 function CartPage({ items, cartItemsCount, onOpenCart, onRemoveItem, onUpdateQuantity, onBackToHome, onClearCart, onGoToCheckout }) {
   const [showClearConfirm, setShowClearConfirm] = useState(false);
-  const total = items.reduce(
-    (sum, item) => sum + Number(item.price) * item.quantity,
-    0
-  );
+  const { subtotal, shipping, total } = calculateOrderTotals(items);
 
   return (
     <div className="app-shell">
@@ -77,9 +75,19 @@ function CartPage({ items, cartItemsCount, onOpenCart, onRemoveItem, onUpdateQua
               ))}
             </div>
             <div className="cart-summary">
-              <div className="summary-row">
-                <span>Total:</span>
-                <span className="total-price">{formatPrice(total)}</span>
+              <div className="cart-summary-breakdown">
+                <div className="summary-row">
+                  <span>Subtotal</span>
+                  <span>{formatPrice(subtotal)}</span>
+                </div>
+                <div className="summary-row">
+                  <span>Frete</span>
+                  <span>{formatPrice(shipping)}</span>
+                </div>
+                <div className="summary-row total-row">
+                  <span>Total</span>
+                  <span className="total-price">{formatPrice(total)}</span>
+                </div>
               </div>
               <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap', justifyContent: 'center' }}>
                 <button

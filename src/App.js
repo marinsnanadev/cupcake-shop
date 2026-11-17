@@ -29,6 +29,9 @@ function App() {
 
   const auth = useAuth();
   const { cartItems, toasts, addToCart, removeFromCart, updateQuantity, clearCart, reloadCart, sessionId } = useCart(auth.token);
+  const visibleToasts = auth.error && !toasts.some((toast) => toast.isError && toast.message === auth.error)
+    ? [{ id: 'auth-network-error', isError: true, message: auth.error }, ...toasts]
+    : toasts;
 
   const handleSelectCategory = (category) => {
     setSelectedCategory(category);
@@ -41,13 +44,18 @@ function App() {
   };
 
   if (!showStorefront) {
-    return <SplashPage image={splashImage} onEnter={() => setShowStorefront(true)} />;
+    return (
+      <>
+        <ToastNotifications toasts={visibleToasts} />
+        <SplashPage image={splashImage} onEnter={() => setShowStorefront(true)} />
+      </>
+    );
   }
 
   if (currentPage === 'cart') {
     return (
       <>
-        <ToastNotifications toasts={toasts} />
+        <ToastNotifications toasts={visibleToasts} />
         <CartPage
           items={cartItems}
           cartItemsCount={cartItems.length}
@@ -77,7 +85,7 @@ function App() {
 
     return (
       <>
-        <ToastNotifications toasts={toasts} />
+        <ToastNotifications toasts={visibleToasts} />
         <CheckoutPage
           items={cartItems}
           cartItemsCount={cartItems.length}
@@ -103,30 +111,36 @@ function App() {
 
   if (currentPage === 'account' && auth.isAuthenticated) {
     return (
-      <AccountPage
-        token={auth.token}
-        cartItemsCount={cartItems.length}
-        onOpenCart={() => setCurrentPage('cart')}
-        onBackToHome={() => setCurrentPage('home')}
-      />
+      <>
+        <ToastNotifications toasts={visibleToasts} />
+        <AccountPage
+          token={auth.token}
+          cartItemsCount={cartItems.length}
+          onOpenCart={() => setCurrentPage('cart')}
+          onBackToHome={() => setCurrentPage('home')}
+        />
+      </>
     );
   }
 
   if (currentPage === 'shop') {
     return (
-      <ShopPage
-        onBackToHome={() => setCurrentPage('home')}
-        onOpenCart={() => setCurrentPage('cart')}
-        cartItemsCount={cartItems.length}
-        onSelectCategory={handleSelectCategory}
-      />
+      <>
+        <ToastNotifications toasts={visibleToasts} />
+        <ShopPage
+          onBackToHome={() => setCurrentPage('home')}
+          onOpenCart={() => setCurrentPage('cart')}
+          cartItemsCount={cartItems.length}
+          onSelectCategory={handleSelectCategory}
+        />
+      </>
     );
   }
 
   if (currentPage === 'category' && selectedCategory) {
     return (
       <>
-        <ToastNotifications toasts={toasts} />
+        <ToastNotifications toasts={visibleToasts} />
         <CategoryPage
           category={selectedCategory}
           cartItemsCount={cartItems.length}
@@ -148,7 +162,7 @@ function App() {
         onSelectCategory={handleSelectCategory}
         addToCart={addToCart}
         checkoutComplete={checkoutComplete}
-        toasts={toasts}
+        toasts={visibleToasts}
         user={auth.user}
         onLogout={() => setShowLogoutConfirm(true)}
         onOpenLogin={() => setShowAuthModal(true)}

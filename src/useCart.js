@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { imageMap } from './imageMap';
 import { getSessionId } from './session';
+import { NETWORK_ERROR_MESSAGE } from './apiFetch';
 import {
   fetchCart,
   addItemToCart,
@@ -20,6 +21,15 @@ export function useCart(token) {
   const sessionId = useRef(getSessionId()).current;
   const isAuthenticated = Boolean(token);
 
+  const showError = (error, fallbackMessage) => {
+    const toastId = `error-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const message = error.message || fallbackMessage || NETWORK_ERROR_MESSAGE;
+    setToasts((prevToasts) => [...prevToasts, { id: toastId, isError: true, message }]);
+    window.setTimeout(() => {
+      setToasts((prevToasts) => prevToasts.filter((toast) => toast.id !== toastId));
+    }, 4000);
+  };
+
   const mapCartResponse = (data) =>
     data.map((entry) => ({
       item_id: entry.item_id,
@@ -36,9 +46,11 @@ export function useCart(token) {
       const data = isAuthenticated ? await fetchMyCart(token) : await fetchCart(sessionId);
       setCartItems(mapCartResponse(data));
     } catch (err) {
-      console.warn('Erro ao carregar a sacola:', err);
+      showError(err, 'Não foi possível carregar sua sacola.');
       setCartItems([]);
+      return false;
     }
+    return true;
   };
 
   useEffect(() => {
@@ -53,9 +65,10 @@ export function useCart(token) {
       } else {
         await addItemToCart(sessionId, product.id, 1);
       }
-      await loadCart();
+      if (!(await loadCart())) return;
     } catch (err) {
-      console.error('Erro ao adicionar produto à sacola:', err);
+      showError(err, 'Não foi possível adicionar o produto à sacola.');
+      return;
     }
 
     const toastId = `${product.name}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -74,7 +87,7 @@ export function useCart(token) {
       }
       await loadCart();
     } catch (err) {
-      console.error('Erro ao remover item:', err);
+      showError(err, 'Não foi possível remover o item.');
     }
   };
 
@@ -87,7 +100,7 @@ export function useCart(token) {
       }
       await loadCart();
     } catch (err) {
-      console.error('Erro ao atualizar quantidade:', err);
+      showError(err, 'Não foi possível atualizar a quantidade.');
     }
   };
 
@@ -100,7 +113,7 @@ export function useCart(token) {
       }
       await loadCart();
     } catch (err) {
-      console.error('Erro ao esvaziar a sacola:', err);
+      showError(err, 'Não foi possível esvaziar sua sacola.');
     }
   };
 

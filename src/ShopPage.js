@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { imageMap } from './imageMap';
 import { API_BASE } from './apiConfig';
+import { apiFetch } from './apiFetch';
 import { STORE_NAME } from './storeConfig';
 import './Nav.css';
 import './ShopPage.css';
@@ -11,7 +12,7 @@ function ShopPage({ onBackToHome, onSelectCategory, cartItemsCount = 0, onOpenCa
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch(`${API_BASE}/categories`)
+    apiFetch(`${API_BASE}/categories`)
       .then((res) => {
         if (!res.ok) throw new Error('Não foi possível carregar as categorias.');
         return res.json();

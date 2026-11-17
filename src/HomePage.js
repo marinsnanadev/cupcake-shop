@@ -5,7 +5,7 @@ import Reveal from './Reveal';
 import ToastNotifications from './ToastNotifications';
 import { formatPrice } from './formatPrice';
 import { collections, featuredProducts, heroImages, storyImage } from './homeData';
-import { STORE_NAME } from './storeConfig';
+import { CONTACT_EMAIL, STORE_NAME } from './storeConfig';
 
 function HomePage({ cartItemsCount, onOpenCart, onOpenShop, onSelectCategory, addToCart, checkoutComplete, toasts, user, onLogout, onOpenLogin, onOpenAccount }) {
   const [frontImageIndex, setFrontImageIndex] = useState(0);
@@ -130,33 +130,7 @@ function HomePage({ cartItemsCount, onOpenCart, onOpenShop, onSelectCategory, ad
           <ul>
             <li><a href="#shop">Cardápio</a></li>
             <li><a href="#story">Nossa história</a></li>
-            <li><a href="mailto:">Fale conosco</a></li>
-          </ul>
-        </div>
-
-        <div className="social-media">
-          <h3>Siga a gente</h3>
-          <ul>
-            <li><button type="button" className="footer-social-link">Instagram</button></li>
-            <li><button type="button" className="footer-social-link">Facebook</button></li>
-            <li><button type="button" className="footer-social-link">Twitter</button></li>
-          </ul>
-        </div>
-
-        <div className="newsletter">
-          <h3>Novidades</h3>
-          <p>Cadastre seu e-mail para receber novidades e ofertas especiais.</p>
-          <form>
-            <input type="email" placeholder="Seu e-mail" />
-            <button type="submit">Cadastrar</button>
-          </form>
-        </div>
-
-        <div className="legal">
-          <h3>Informações</h3>
-          <ul>
-            <li><a href="/privacy-policy">Política de privacidade</a></li>
-            <li><a href="/terms-of-service">Termos de uso</a></li>
+            <li><a href={`mailto:${CONTACT_EMAIL}`}>Fale conosco</a></li>
           </ul>
         </div>
       </section>

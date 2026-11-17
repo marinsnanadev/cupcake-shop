@@ -3,15 +3,13 @@ import Footer from './Footer';
 import { formatPrice } from './formatPrice';
 import { PAYMENT_METHODS } from './paymentMethods';
 import { fetchAccount } from './accountApi';
+import { NETWORK_ERROR_MESSAGE } from './apiFetch';
 import { generateIdempotencyKey } from './idempotency';
+import { calculateOrderTotals } from './orderPricing';
 import { STORE_NAME } from './storeConfig';
 import './Nav.css';
 import './CartPage.css';
 import './CheckoutPage.css';
-
-const SHIPPING_COST = 8;
-const FREE_SHIPPING_THRESHOLD = 80;
-const TAX_RATE = 0;
 
 function FormField({ id, label, ...inputProps }) {
     return (
@@ -203,8 +201,11 @@ function CheckoutPage({ items, cartItemsCount, onBackToCart, onPlaceOrder, user,
                     setSelectedPaymentMethod(account.default_payment_method);
                 }
             })
-            .catch(() => {
+            .catch((err) => {
                 // no saved defaults yet, no problem — continue with a blank form
+                if (err.message === NETWORK_ERROR_MESSAGE) {
+                    setError(err.message);
+                }
             });
     }, [token]);
 
@@ -212,13 +213,10 @@ function CheckoutPage({ items, cartItemsCount, onBackToCart, onPlaceOrder, user,
         setForm((prev) => ({ ...prev, [field]: event.target.value }));
     };
 
-    const subtotal = useMemo(
-        () => items.reduce((sum, item) => sum + Number(item.price) * item.quantity, 0),
+    const { subtotal, tax, shipping, total } = useMemo(
+        () => calculateOrderTotals(items),
         [items]
     );
-    const tax = Math.round(subtotal * TAX_RATE);
-    const shipping = subtotal > FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
-    const total = subtotal + tax + shipping;
 
     const handlePlaceOrder = async (confirmPriceChanges = false) => {
         const requiredClientFields = [
