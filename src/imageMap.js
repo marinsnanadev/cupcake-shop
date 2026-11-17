@@ -1,4 +1,4 @@
-const fallbackImage = `${process.env.PUBLIC_URL}/moon.png`;
+const fallbackImage = `${process.env.PUBLIC_URL}/cupcake-icon.svg`;
 
 const cupcakeAssets = process.env.NODE_ENV === 'test'
   ? { keys: () => [] }

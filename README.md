@@ -141,3 +141,7 @@ O projeto organiza responsabilidades de forma compatível com o padrão MVC:
 - O pagamento é simulado; a aplicação não processa transações reais.
 - Não existe painel administrativo. A atualização do status é feita pela rota protegida por `ADMIN_TOKEN`.
 - O seed recria as categorias e os produtos do catálogo; use-o para popular o banco de desenvolvimento.
+
+## Créditos das imagens
+
+- Origem das fotos: Google Imagens.

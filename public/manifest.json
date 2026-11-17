@@ -3,9 +3,9 @@
   "name": "Cupcake Shop",
   "icons": [
     {
-      "src": "moon.png",
+      "src": "cupcake-icon.svg",
       "sizes": "any",
-      "type": "image/png"
+      "type": "image/svg+xml"
     }
   ],
   "start_url": ".",

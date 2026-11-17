@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { registerUser, loginUser, fetchCurrentUser } from './authApi';
 
-const TOKEN_STORAGE_KEY = 'violet_auth_token';
+const TOKEN_STORAGE_KEY = 'cupcake_auth_token';
 
 export function useAuth() {
   const [token, setToken] = useState(() => localStorage.getItem(TOKEN_STORAGE_KEY));
