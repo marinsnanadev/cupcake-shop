@@ -30,10 +30,16 @@
 
 .cart-item:hover {
   box-shadow: 0 8px 24px rgba(185, 79, 115, 0.15);
-  transform: translateY(-2px);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .cart-item:hover {
+    transform: translateY(-2px);
+  }
 }
 
 .cart-item-image {
+  align-self: start;
   width: 120px;
   height: 150px;
   object-fit: cover;
@@ -224,7 +230,7 @@ padding: 0.6rem 1rem;
       "image controls"
       "image subtotal"
       "remove remove";
-    align-items: center;
+    align-items: start;
     gap: 0.55rem 0.8rem;
     padding: 0.9rem;
   }
@@ -253,6 +259,8 @@ padding: 0.6rem 1rem;
     grid-area: subtotal;
     min-width: 0;
     text-align: left;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
   }
 
   .cart-item > .remove-btn {
