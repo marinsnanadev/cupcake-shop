@@ -1,3 +1,6 @@
+from sqlalchemy import event
+
+
 def test_get_cart_creates_empty_cart_for_new_session(client):
     response = client.get("/cart/new-session")
     assert response.status_code == 200
@@ -13,6 +16,27 @@ def test_add_to_cart_creates_item(client, seeded_product):
     assert cart[0]["quantity"] == 2
     assert cart[0]["product"]["id"] == "chocolate"
     assert cart[0]["product"]["price"] == 10.0
+
+
+def test_get_cart_query_orders_cart_items_by_id(client, seeded_product, db_session):
+    client.post("/cart/session-ordered/add", json={"product_id": "chocolate", "quantity": 1})
+    statements = []
+
+    def capture_sql(_connection, _cursor, statement, _parameters, _context, _executemany):
+        if "cart_items" in statement.lower():
+            statements.append(statement)
+
+    engine = db_session.get_bind()
+    event.listen(engine, "before_cursor_execute", capture_sql)
+    try:
+        response = client.get("/cart/session-ordered")
+    finally:
+        event.remove(engine, "before_cursor_execute", capture_sql)
+
+    assert response.status_code == 200
+    cart_item_queries = [sql for sql in statements if "from cart_items" in sql.lower()]
+    assert cart_item_queries
+    assert any("order by" in sql.lower() for sql in cart_item_queries)
 
 
 def test_add_existing_product_increments_quantity_instead_of_duplicating(client, seeded_product):

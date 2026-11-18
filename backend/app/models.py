@@ -62,7 +62,12 @@ class Cart(Base):
     session_id = Column(String, unique=True, index=True, nullable=True)
     user_id = Column(Integer, ForeignKey("users.id"), unique=True, nullable=True)
 
-    items = relationship("CartItem", back_populates="cart", cascade="all, delete-orphan")
+    items = relationship(
+        "CartItem",
+        back_populates="cart",
+        cascade="all, delete-orphan",
+        order_by="CartItem.id",
+    )
     user = relationship("User", back_populates="cart")
 
 
@@ -118,7 +123,12 @@ class Order(Base):
     total = Column(Float)
 
     user = relationship("User", back_populates="orders")
-    items = relationship("OrderItem", back_populates="order", cascade="all, delete-orphan")
+    items = relationship(
+        "OrderItem",
+        back_populates="order",
+        cascade="all, delete-orphan",
+        order_by="OrderItem.id",
+    )
 
 
 class OrderItem(Base):
