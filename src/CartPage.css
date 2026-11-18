@@ -25,17 +25,11 @@
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.8);
   border: 1px solid rgba(185, 79, 115, 0.1);
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  transition: box-shadow 0.3s ease;
 }
 
 .cart-item:hover {
   box-shadow: 0 8px 24px rgba(185, 79, 115, 0.15);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .cart-item:hover {
-    transform: translateY(-2px);
-  }
 }
 
 .cart-item-image {
