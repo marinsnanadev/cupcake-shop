@@ -63,6 +63,7 @@ class UserRegister(BaseModel):
     name: str
     email: EmailStr
     password: str
+    session_id: Optional[str] = None
 
 
 class UserLogin(BaseModel):
@@ -245,6 +246,17 @@ def _merge_guest_cart_into_user_cart(db: Session, guest_cart: models.Cart, user_
     db.delete(guest_cart)
 
 
+def _merge_session_cart_into_user_cart(db: Session, session_id: Optional[str], user_id: int):
+    if not session_id:
+        return
+
+    guest_cart = db.query(models.Cart).filter(models.Cart.session_id == session_id).first()
+    if guest_cart:
+        user_cart = get_or_create_user_cart(db, user_id)
+        _merge_guest_cart_into_user_cart(db, guest_cart, user_cart)
+        db.commit()
+
+
 # ---------------------------------------------------------------------------
 # Order/account helpers
 # ---------------------------------------------------------------------------
@@ -300,6 +312,8 @@ def register(payload: UserRegister, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(user)
 
+    _merge_session_cart_into_user_cart(db, payload.session_id, user.id)
+
     token = create_access_token(user.id)
     return {"access_token": token, "user": user}
 
@@ -310,12 +324,7 @@ def login(payload: UserLogin, db: Session = Depends(get_db)):
     if not user or not verify_password(payload.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="E-mail ou senha inválidos")
 
-    if payload.session_id:
-        guest_cart = db.query(models.Cart).filter(models.Cart.session_id == payload.session_id).first()
-        if guest_cart:
-            user_cart = get_or_create_user_cart(db, user.id)
-            _merge_guest_cart_into_user_cart(db, guest_cart, user_cart)
-            db.commit()
+    _merge_session_cart_into_user_cart(db, payload.session_id, user.id)
 
     token = create_access_token(user.id)
     return {"access_token": token, "user": user}

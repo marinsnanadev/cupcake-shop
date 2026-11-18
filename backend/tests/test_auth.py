@@ -20,6 +20,28 @@ def test_register_creates_user_and_returns_token(client):
     assert data["token_type"] == "bearer"
 
 
+def test_register_merges_guest_cart_into_new_user_cart(client, seeded_product):
+    client.post("/cart/guest-session-register/add", json={"product_id": "chocolate", "quantity": 2})
+
+    response = client.post(
+        "/auth/register",
+        json={
+            "name": "Test User",
+            "email": "register-cart@example.com",
+            "password": "password123",
+            "session_id": "guest-session-register",
+        },
+    )
+
+    assert response.status_code == 200
+    token = response.json()["access_token"]
+    user_cart = client.get("/cart/me", headers=auth_headers(token)).json()
+    assert len(user_cart) == 1
+    assert user_cart[0]["product"]["id"] == "chocolate"
+    assert user_cart[0]["quantity"] == 2
+    assert client.get("/cart/guest-session-register").json() == []
+
+
 def test_register_duplicate_email_returns_400(client):
     register_user(client)
     response = client.post(
