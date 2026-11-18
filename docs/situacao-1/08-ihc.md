@@ -143,18 +143,18 @@ flowchart TD
 
 ## 6. Revisão da IHC (melhoria contínua)
 
-Ao comparar as telas publicadas com os princípios do item 1, foram identificados os pontos abaixo.
+Após as correções de interface, a revisão dos pontos identificados ficou assim:
 
 | Ponto | Problema | Princípio afetado | Situação |
 |---|---|---|---|
-| Total da sacola sem frete | A sacola mostra "Total: R$ 24,00", mas o checkout mostra R$ 32,00 (com frete de R$ 8,00) | Clareza e consistência | A corrigir |
-| Rodapé da home com elementos sem função | Os botões de redes sociais, o formulário de newsletter, "Fale conosco" e os links de privacidade e termos não levam a lugar nenhum | Clareza e resposta ao usuário | A corrigir |
-| Erro de conexão em inglês | Se a API não responder, o navegador mostra "Failed to fetch" | Clareza e empatia | A corrigir |
-| Pedido concluído sem tela de confirmação | O aviso é uma notificação de alguns segundos na página inicial, sem número do pedido | Resposta ao usuário | Próxima versão |
-| Linha "Impostos R$ 0,00" | A loja não cobra impostos, mas a linha aparece no resumo | Simplicidade | A avaliar |
+| Total da sacola sem frete | O total da sacola não refletia o frete cobrado no checkout | Clareza e consistência | Corrigido: a sacola agora mostra subtotal, frete e total e reutiliza a mesma regra do checkout (frete de R$ 8,00; grátis acima de R$ 80,00) |
+| Rodapé da home com elementos sem função | Redes sociais, newsletter e links legais não tinham destinos funcionais | Clareza e resposta ao usuário | Corrigido: elementos sem destino removidos; foram mantidos Cardápio e Nossa história, e Fale conosco usa o e-mail de contato configurado |
+| Erro de conexão em inglês | Falhas de rede podiam exibir a mensagem técnica "Failed to fetch" | Clareza e empatia | Corrigido: falhas de conexão exibem "Não foi possível conectar ao servidor. Tente novamente em instantes." |
+| Pedido concluído sem tela de confirmação | O aviso é uma notificação de alguns segundos na página inicial, sem número do pedido | Resposta ao usuário | Pendente para próxima versão |
+| Linha "Impostos R$ 0,00" | A loja não cobra impostos, mas a linha aparece no resumo | Simplicidade | Pendente de avaliação |
 | Sem painel administrativo | A atualização de status é feita por rota protegida, e não por uma tela | Controle do usuário | Fora do escopo (ver `01-escopo.md`) |
 
-As correções serão registradas no laudo de qualidade (Situação 3), junto com o feedback dos testadores.
+As correções foram aplicadas na interface e cobertas por testes automatizados. Os pontos pendentes continuam sujeitos a avaliação e ao feedback dos testadores, que será registrado no laudo de qualidade (Situação 3).
 
 ## 7. Protótipo
 

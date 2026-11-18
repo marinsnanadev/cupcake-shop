@@ -29,7 +29,7 @@ body {
   background: linear-gradient(135deg, var(--bg-primary) 0%, #fbe9e8 100%);
   color: var(--ink);
   padding: 0 0 0;
-  overflow: hidden;
+  overflow: clip;
 }
 
 .ambient {

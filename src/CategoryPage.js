@@ -56,18 +56,24 @@ function CategoryPage({ category, cartItemsCount, onOpenCart, onBackToShop, onBa
       <div className="ambient ambient-one" />
       <div className="ambient ambient-two" />
 
-      <nav className="site-nav">
+      <nav className="site-nav site-nav-category">
         <div className="nav-actions">
           <button type="button" className="nav-back-btn" onClick={onBackToShop}>
-            ← Voltar às categorias
+            <span className="nav-category-back-full">← Voltar às categorias</span>
+            <span className="nav-category-back-short" aria-hidden="true">← Categorias</span>
           </button>
           <button type="button" className="nav-back-btn" onClick={onBackToHome}>
             Início
           </button>
         </div>
         <span className="nav-mark">{STORE_NAME}</span>
-        <div style={{ position: 'relative' }}>
-          <button type="button" className="nav-bag" aria-label="Ver sacola" onClick={onOpenCart}>
+        <div className="nav-cart">
+          <button
+            type="button"
+            className="nav-bag"
+            aria-label={cartItemsCount > 0 ? `Ver sacola, ${cartItemsCount} produtos` : 'Ver sacola'}
+            onClick={onOpenCart}
+          >
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.6">
               <path d="M6 8h12l-1 12H7L6 8Z" />
               <path d="M9 8V6a3 3 0 0 1 6 0v2" />

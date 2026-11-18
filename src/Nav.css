@@ -18,6 +18,14 @@
   border-bottom: 1px solid rgba(185, 79, 115, 0.1);
 }
 
+.nav-category-back-short {
+  display: none;
+}
+
+.nav-cart {
+  position: relative;
+}
+
 .nav-mark {
   font-family: 'Cormorant Garamond', serif;
   font-size: 1.4rem;
@@ -168,6 +176,47 @@
 
   .nav-bag {
     position: relative;
+  }
+
+  .site-nav-category {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto 44px;
+    gap: 0.4rem;
+    padding: 0.55rem 0.75rem;
+  }
+
+  .site-nav-category .nav-actions {
+    min-width: 0;
+    gap: 0;
+  }
+
+  .site-nav-category .nav-back-btn {
+    padding: 0.45rem 0.25rem;
+    font-size: 0.78rem;
+    white-space: nowrap;
+  }
+
+  .site-nav-category .nav-category-back-full {
+    display: none;
+  }
+
+  .site-nav-category .nav-category-back-short {
+    display: inline;
+  }
+
+  .site-nav-category > .nav-mark {
+    font-size: 1rem;
+    letter-spacing: 0.12em;
+    white-space: nowrap;
+  }
+
+  .site-nav-category > .nav-cart {
+    justify-self: end;
+  }
+
+  .site-nav-category .nav-bag {
+    width: 44px;
+    height: 44px;
   }
 }
 
